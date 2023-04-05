@@ -10,7 +10,7 @@ def read_planet_data(filepath, completo=True):
 
     columns = ['System', 'Mp', 'Mperr', 'Rp', 'Rperr', \
                     'Mstar', 'Mstarerr', 'Teq', 'sma', \
-                    'Tstar', 'Tstarerr', 'Rstar', 'Rstarerr']
+                    'Tstar', 'Tstarerr', 'Rstar', 'Rstarerr', 'Age', 'Ageerr']
     data = pd.read_csv(filepath, names=columns)
 
     if completo:
