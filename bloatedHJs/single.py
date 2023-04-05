@@ -173,13 +173,13 @@ class SinglePlanetModel:
 
 
             # first calculate tint 
-            tint = self.interp_func_tint((mp_true, zenv_true, mstar_true, lumi_true, self.data['sma']))
+            tint = self.interp_func_tint((mp_true, zenv_true, mstar_true, self.data['sma'], self.data['Age']))
 
             if tint > 1000:
                 return -np.inf, -np.inf, -np.inf, -np.inf
 
             else:
-                radius_theoretical = self.interp_func_radius((mp_true, zenv_true, mstar_true, lumi_true, self.data['sma']))
+                radius_theoretical = self.interp_func_radius((mp_true, zenv_true, mstar_true, self.data['sma'], self.data['Age']))
                 epsilon = pp.lumi_to_epsilon(lumi_true, radius_theoretical, self.data['sma'], self.data['Tstar'], self.data['Rstar'])
 
                 if epsilon > 5:
@@ -220,15 +220,16 @@ class SinglePlanetModel:
             zenv_ig = initial_guess[3]
             lumi_ig = initial_guess[0]
 
-            tint_ig      = self.interp_func_tint((self.data['Mp'], zenv_ig, self.data['Mstar_completo'], lumi_ig, self.data['sma']))
-            radius_ig    = self.interp_func_radius((self.data['Mp'], zenv_ig, self.data['Mstar_completo'], lumi_ig, self.data['sma']))
+            # remove lumi_ig and add time as inputs to the interpolation functions
+            tint_ig      = self.interp_func_tint((self.data['Mp'], zenv_ig, self.data['Mstar_completo'], self.data['sma'], self.data['Age']))
+            radius_ig    = self.interp_func_radius((self.data['Mp'], zenv_ig, self.data['Mstar_completo'], self.data['sma'], self.data['Age']))
             epsilon_ig   = pp.lumi_to_epsilon(lumi_ig, radius_ig, self.data['sma'], self.data['Tstar'], self.data['Rstar'])
 
             while (epsilon_ig > 4.5) or (tint_ig > 900):
                 lumi_ig    = lumi_ig - 50
                 
-                tint_ig    = self.interp_func_tint((self.data['Mp'], zenv_ig, self.data['Mstar_completo'], lumi_ig, self.data['sma']))
-                radius_ig  = self.interp_func_radius((self.data['Mp'], zenv_ig, self.data['Mstar_completo'], lumi_ig, self.data['sma']))
+                tint_ig    = self.interp_func_tint((self.data['Mp'], zenv_ig, self.data['Mstar_completo'], self.data['sma'], self.data['Age']))
+                radius_ig  = self.interp_func_radius((self.data['Mp'], zenv_ig, self.data['Mstar_completo'], self.data['sma'], self.data['Age']))
                 epsilon_ig = pp.lumi_to_epsilon(lumi_ig, radius_ig, self.data['sma'], self.data['Tstar'], self.data['Rstar'])
                
                 if self.verbose:
@@ -305,8 +306,8 @@ class SinglePlanetModel:
         else:
             lumi = 10**(chains[:,0])
 
-        Prcb = self.interp_func_prcb((chains[:,2], chains[:,3], chains[:,1], lumi, self.data['sma']))
-        Trcb = self.interp_func_trcb((chains[:,2], chains[:,3], chains[:,1], lumi, self.data['sma']))
+        Prcb = self.interp_func_prcb((chains[:,2], chains[:,3], chains[:,1], self.data['sma'], self.data['Age']))
+        Trcb = self.interp_func_trcb((chains[:,2], chains[:,3], chains[:,1], self.data['sma'], self.data['Age']))
 
         Teq, Lstar = pp.stellarparams_completo(chains[:,1], self.data['sma'])
 
